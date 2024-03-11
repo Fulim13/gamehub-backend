@@ -7,9 +7,9 @@ const PORT = 3001;
 
 app.use(express.json());
 
-app.get("/api/platforms", async (req, res) => {
+app.get("/api/games", async (req, res) => {
   try {
-    const response = await axios.get("https://api.rawg.io/api/platforms", {
+    const response = await axios.get("https://api.rawg.io/api/games", {
       params: {
         key: process.env.API_KEY, // Access API key from environment variable
       },
