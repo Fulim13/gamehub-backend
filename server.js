@@ -35,9 +35,27 @@ app.get("/api/games", async (req, res) => {
         platforms: req.query.platforms,
         ordering: req.query.ordering,
         search: req.query.search,
+        page: req.query.page,
       },
     });
-    res.json({ results: response.data.results, count: response.data.count });
+
+    if (response.data.next !== null) {
+      // Regular expression to match the key parameter and its value
+      const regex = /([&?])key=[^&]+&?/;
+
+      // Remove the key parameter while preserving the URL format
+      response.data.next = response.data.next
+        .replace(regex, "$1")
+        .replace(/&$/, "")
+        .replace(/\?&/, "?");
+      // console.log(response.data.next);
+    }
+
+    res.json({
+      results: response.data.results,
+      count: response.data.count,
+      next: response.data.next,
+    });
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ error: "Internal Server Error" });
