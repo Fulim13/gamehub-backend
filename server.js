@@ -7,16 +7,42 @@ const PORT = 3001;
 
 app.use(express.json());
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "https://game-hub-murex-mu.vercel.app");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+app.use(function (req, res, next) {
+  // Check local or production environment
+  // No need set NODE_ENV in .env file and production environment, 
+  // because it is a built-in environment variable that is automatically set to "production" when the app is deployed.
+  if (process.env.NODE_ENV === "production") {
+    res.header(
+      "Access-Control-Allow-Origin",
+      "https://game-hub-murex-mu.vercel.app"
+    );
+  } else {
+    res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+  }
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
 });
-
 
 app.get("/api/games", async (req, res) => {
   try {
     const response = await axios.get("https://api.rawg.io/api/games", {
+      params: {
+        key: process.env.API_KEY, // Access API key from environment variable
+      },
+    });
+    res.json({ results: response.data.results, count: response.data.count });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/api/genres", async (req, res) => {
+  try {
+    const response = await axios.get("https://api.rawg.io/api/genres", {
       params: {
         key: process.env.API_KEY, // Access API key from environment variable
       },
