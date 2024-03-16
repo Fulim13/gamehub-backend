@@ -21,7 +21,7 @@ app.get("/api/games", async (req, res) => {
         key: process.env.API_KEY, // Access API key from environment variable
       },
     });
-    res.json(response.data.results);
+    res.json({ results: response.data.results, count: response.data.count });
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ error: "Internal Server Error" });
